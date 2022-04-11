@@ -6,16 +6,131 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Telegram" 
         xmlns:local1="clr-namespace:Telegram.Controll" 
+        xmlns:local2="clr-namespace:Telegram.Controll.Chat"
         mc:Ignorable="d"
-        WindowStyle="None"
         Loaded="Window_Loaded"
         MouseDown="Window_MouseDown"
+        WindowStyle="None"
         Background="Transparent"
         ResizeMode="NoResize"
         Title="Telegram" Height="520" Width="800">
-
+    
     <Window.Resources>
+
+
+        <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid x:Name="Grid">
+                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                            <Border x:Name="Rectangle1" CornerRadius="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Tag" Value="Horizontal">
+                                <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
+                                <Setter TargetName="Rectangle1" Property="Height" Value="7" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+
+        <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+        <Setter Property="Width" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Border Background="#3F4750" Width="4" CornerRadius="2">
+                        <Grid x:Name="GridRoot"   >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.00001*" />
+                            </Grid.RowDefinitions>
+
+                            <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Background="#7D8389" Style="{DynamicResource ScrollThumbs}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
+                            <Setter Value="{DynamicResource ButtonSelectBrush}" TargetName="Thumb" Property="Background" />
+                        </Trigger>
+                        <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
+                            <Setter Value="{DynamicResource DarkBrush}" TargetName="Thumb" Property="Background" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Width" Value="Auto" />
+                            <Setter Property="Height" Value="12" />
+                            <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
+                            <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                            <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
         
+        
+        
+        <Style x:Key="IconP" TargetType="materialDesign:PackIcon">
+            <Setter Property="Foreground" Value="#6B7E91"></Setter>
+            <Setter Property="FontSize" Value="24"></Setter>
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0 0 10 0"/>
+            <Setter Property="Height" Value="20"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="#fff"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ChatStyleTime" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="13"></Setter>
+            <Setter Property="FontWeight" Value="Light"></Setter>
+            <Setter Property="Foreground" Value="#6B7E91"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+            <Setter Property="Margin" Value="20 2"></Setter>
+        </Style>
+        <Style x:Key="ChatUserStyleName" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="15"></Setter>
+            <Setter Property="FontWeight" Value="Regular"></Setter>
+            <Setter Property="Foreground" Value="#fff"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+            <Setter Property="Margin" Value="20 2"></Setter>
+        </Style>
+
+
+
         <Style TargetType="Button" x:Key="CloseBtn">
             <Setter Property="Background" Value="#1F2936"></Setter>
             <Setter Property="Foreground" Value="#536370"></Setter>
@@ -49,44 +164,64 @@
             <Setter Property="Background" Value="#1F2936"></Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="Red"/>
                     <Setter Property="Cursor" Value="Hand"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+
+        <Style x:Key="chatBtn" TargetType="Button">
+            <Setter Property="Background" Value="#17212B"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="#444"/>
+        </Style>
+
+
+        <Style x:Key="textBoxSearchUser" TargetType="TextBox">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8 2"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="BorderBrush" Value="Black"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+   
         
     </Window.Resources>
-
-
-
+    
+    
     <!--Bismillahir Rohmanir Rohim-->
-    <Grid >
-
+    <Grid>
+        
+        
         <!--#region  Sidebar telegram--> 
         <Grid  x:Name="Sidebar_tg" Panel.ZIndex="10" Width="200" Height="500" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="-200 0 0 0" Background="#1F2936">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25*"></RowDefinition>
-                <RowDefinition Height="65*"></RowDefinition>
+                <RowDefinition Height="45*"></RowDefinition>
+                <RowDefinition Height="45*"></RowDefinition>
                 <RowDefinition Height="10*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Grid Background="#276899" Grid.Row="0">
+            <Grid  Grid.Row="0" >
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60*"></RowDefinition>
                     <RowDefinition Height="40*"></RowDefinition>
+                    <RowDefinition Height="60*"></RowDefinition>
                 </Grid.RowDefinitions>
 
 
 
-                <DockPanel Grid.Row="0">
+                <DockPanel Grid.Row="0" Background="#276899">
                     <!--User image-->
                     <Border Height="44" Width="44" CornerRadius="50" Margin="20 0 0 0">
                         <Border.Background >
                             <SolidColorBrush Color="red"></SolidColorBrush>
-                            <!--<ImageBrush Stretch="Fill" ImageSource="Images/avatar.jpg"/>-->
+
+                            <!--<ImageBrush ImageSource="/Images/avatar.jpg"/>-->
                         </Border.Background>
                     </Border>
-
 
 
                     <!--Button for saved items in sidebar-->
@@ -109,42 +244,42 @@
                 </DockPanel>
 
 
-
-                <Expander Grid.Row="1" Background="#276899" Foreground="#fff">
-                    <Expander.Header >
-                        <StackPanel>
-                            <TextBlock Margin="0">Ruslan</TextBlock>
-                            <TextBlock>Ruslan</TextBlock>
+                <StackPanel  Grid.Row="1">
+                    <Expander HorizontalAlignment="Stretch"
+                          Background="#276899"
+                          Margin="0,0,0, 0"
+                              Foreground="#fff"
+                              Padding="0"
+                           >
+                        <Expander.Header>
+                            <StackPanel>
+                                <TextBlock Margin="0" x:Name="GlobalUserName"></TextBlock>
+                                <TextBlock x:Name="GlobalUserPhone"></TextBlock>
+                            </StackPanel>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Background="#1F2936" >
+                            <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                            <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                            <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                            <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                            <TextBlock>asjfdlajglasjdlgka</TextBlock>
                         </StackPanel>
-                    </Expander.Header>
-                    <StackPanel>
-                        <TextBlock>
-                                asjfdlajglasjdlgka
-                                gdasdgsfdga
-                                gasdgfsdg
-                                sgdfgsdfgsdfg
-                                sdfg
-                                sdfg
-                                s
-                                fdgsdf
-                                g
-                                sdfg
-                                
-                                sd
-                        </TextBlock>
-                    </StackPanel>
-
-                </Expander>
+                    </Expander>
+                </StackPanel >
+               
             </Grid>
-
+            <StackPanel Grid.Row="1">
+                <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                <TextBlock>asjfdlajglasjdlgka</TextBlock>
+                <TextBlock>asjfdlajglasjdlgka</TextBlock>
+            </StackPanel>
         </Grid>
-        <!--#endregion-->
-
-        
-        
-        
+        <!--#endregion-->                
             
-            
+        
         <!--#region User list and chat area-->  
         <Grid >
             
@@ -173,81 +308,380 @@
                 </Button>
             </Grid>
 
-            
-            <!-- Telegram User lists and chat area section-->
-            <Grid Grid.Row="1"  x:Name="Telegram_tg">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40*"></ColumnDefinition>
-                    <ColumnDefinition Width="60*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+            <TabControl x:Name="MainTabControl" Grid.Row="1" BorderThickness="0" Margin="0" Padding="-2">
+                
+                <!--#region Start page telegram-->
+                <TabItem Visibility="Collapsed" BorderThickness="0" >
 
-            
-                <!--Telegram User lists and search section-->
-                <Grid Grid.Column="0" Background="#17212B">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="10*"></RowDefinition>
-                        <RowDefinition Height="90*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    
-                    
-                    <!--Search and button for open sidebar-->
-                    <Grid Grid.Row="0">
-                        <DockPanel>
-                            <!--Button for open sidebar-->
-                            <Button 
-                                Click="Click_open_sidebar_btn"
-                                BorderThickness="0"
-                                BorderBrush="#17212B"
-                                Width="40"
-                                Height="30"
-                                Margin="10 0"
-                                Padding="0"
-                                materialDesign:ShadowAssist.Darken="False"
-                                materialDesign:ShadowAssist.ShadowDepth="Depth0"
-                                Background="#17212B">
-                                <materialDesign:PackIcon Kind="Menu"
-                                                         Foreground="#768C9E"
-                                                         Width="30"
-                                                         Height="25"/>
+                    <Grid Background="#17212B">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30*"></RowDefinition>
+                            <RowDefinition Height="70*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.Background>
+                                <ImageBrush ImageSource="/Images/FirstPageTelegramImage.png">
+                                 
+                                </ImageBrush>
+                            </Grid.Background>
+                        </Grid>
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center" Foreground="#fff" FontSize="28">Telegram Desktop</TextBlock>
+                            <TextBlock  Margin="0 12 0 0" Foreground="Gray">Welcome to the offical Telegram Desktop app.</TextBlock>
+                            <TextBlock HorizontalAlignment="Center" Foreground="Gray" >It's fast and secure.</TextBlock>
+
+                            <Button
+                                Click="StartBtnEnter"
+                                Margin="5 30"
+                                Height="40"
+                                Background="#2F6EA5"
+                                >START MESSAGING</Button>   
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <!--#endregion-->
+                
+                
+                
+                <!--#region Enter phone number and create or login for account-->
+                <TabItem Visibility="Collapsed">
+                    <Grid Background="#17212B">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="5*"></RowDefinition>
+                            <RowDefinition Height="95*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0">
+                            <Button Click="BackToStartPanel" Width="50">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#17212B"></Setter>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="Foreground" Value="#fff"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#17212B"/>
+                                                <Setter Property="Cursor" Value="Hand"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <materialDesign:PackIcon Foreground="Gray" Kind="ArrowLeft" />
                             </Button>
-
-                            <!--Search input-->
-                            <TextBox  materialDesign:HintAssist.Hint="Search"
-                                      FontSize="18"
-                                      Foreground="#768C9E"
-                                      Padding="10 0"
-                                      Margin="5 8 20 8" 
-                                      VerticalContentAlignment="Center"
-                                      Background="#242F3D"
-                                      />
-
                         </DockPanel>
-                    </Grid>
 
-                    
-                    <!--Users list section-->
-                    <Grid Grid.Row="1">
-                        <ScrollViewer>
-                            <StackPanel>
-                                <ItemsControl x:Name="Item_control" >
-                                    <local1:UserList></local1:UserList>
-                                </ItemsControl>
-                            </StackPanel>
-                        </ScrollViewer>
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Margin="0 10" Style="{StaticResource ChatUserStyleName}">Your phone number</TextBlock>
+                            <TextBlock Foreground="Gray">Please confirm your country code and</TextBlock>
+                            <TextBlock Foreground="Gray">enter your phone number</TextBlock>
+                            <ComboBox Foreground="#fff" Margin="0 20" BorderBrush="Gray">
+                                <ComboBoxItem IsSelected="True">Uzbekistan</ComboBoxItem>
+                            </ComboBox>
+                            <TextBox x:Name="PhoneNumberInput" BorderBrush="Gray" Text="+998" Foreground="#fff"></TextBox>
+                            <Button
+                                Click="BtnEnterPhone"
+                                Foreground="#fff"
+                                Background="#2F6EA5"
+                                Margin="0 20"
+                                FontSize="14"
+                                Height="40"
+                                BorderThickness="0"
+                                >NEXT</Button>
+                            <TextBlock Cursor="Hand" Margin="0 5" HorizontalAlignment="Center" Foreground="#2F61A5">Quick log in using QR code</TextBlock>
+                        </StackPanel>
                     </Grid>
+                </TabItem>
+                <!--#endregion-->
+
                 
                 
-                </Grid>
+                
+                <!--#region Create or enter password section-->
+                <TabItem Visibility="Collapsed">
+                    <Grid Background="#17212B">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="5*"></RowDefinition>
+                            <RowDefinition Height="95*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0">
+                            <Button Click="BackToPhonePanel" Width="50">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#17212B"></Setter>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="Foreground" Value="#fff"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#17212B"/>
+                                                <Setter Property="Cursor" Value="Hand"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <materialDesign:PackIcon Foreground="Gray" Kind="ArrowLeft" />
+                            </Button>
+                        </DockPanel>
 
-                <Grid Grid.Column="1" Background="#0E1621">
-                    <Frame
-                        Content="">
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Margin="0 10" Style="{StaticResource ChatUserStyleName}">Enter your password</TextBlock>
+                            <TextBlock Foreground="Gray">Hozircha parolni o'zingiz kiritasiz</TextBlock>
+                            <TextBlock Foreground="Gray">Keyinchalik SMS xizmatiga ulanishi mumkin</TextBlock>
+                          
+                            <TextBox x:Name="PasswordInput" BorderBrush="Gray" Margin="0 20 0 0" materialDesign:HintAssist.Hint="Enter password" Foreground="#fff"></TextBox>
+                            <TextBlock x:Name="PasswordInputErrorTxt" Foreground="red" FontSize="10" Visibility="Hidden">Wrong password</TextBlock>
+
+                            <Button
+                                Click="PasswordLogin"
+                                Foreground="#fff"
+                                Background="#2F6EA5"
+                                Margin="5 20"
+                                FontSize="14"
+                                Height="40"
+                                BorderThickness="0"
+                                >LOGIN</Button>
+                            <TextBlock Cursor="Hand" Margin="0 5" HorizontalAlignment="Center" Foreground="#2F61A5">Continue in Russia</TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <!--#endregion-->
+ 
+
+
+                <!--#region Entered user firstname lastname photo-->
+                <TabItem Visibility="Collapsed">
+                    <Grid Background="#17212B">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="5*"></RowDefinition>
+                            <RowDefinition Height="95*"></RowDefinition>
+                        </Grid.RowDefinitions>
                         
-                    </Frame>
-                </Grid>
+                        
+                        <DockPanel Grid.Row="0">
+                            <Button Click="BackToPasswordPanel" Width="50">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#17212B"></Setter>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="Foreground" Value="#fff"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#17212B"/>
+                                                <Setter Property="Cursor" Value="Hand"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <materialDesign:PackIcon Foreground="Gray" Kind="ArrowLeft" />
+                            </Button>
+                        </DockPanel>
 
-            </Grid>
-            
+                        
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            
+                            
+                            <!--Upload photo-->
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel>
+                                    <TextBlock Margin="0 10" Style="{StaticResource ChatUserStyleName}">Your info</TextBlock>
+                                    <TextBlock Foreground="Gray" Margin="0 0 40 0">Select your photo in files</TextBlock>
+                                    <TextBlock Foreground="Gray">Upload photo</TextBlock>
+                                </StackPanel>
+                                <Button Width="60" Height="60" x:Name="yourInfoBtn">
+                                    <Button.Template>
+                                        <ControlTemplate >
+                                            <Rectangle  Height="60" Width="60" RadiusX="50" RadiusY="50">
+                                                <Rectangle.Fill>
+                                                    <SolidColorBrush Color="Blue">
+
+                                                    </SolidColorBrush>
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </StackPanel>
+
+
+
+
+                            <TextBlock Foreground="Gray" Margin="0 20 0 0">Firstname</TextBlock>
+                            <TextBox x:Name="FirstNameInput" BorderBrush="Gray" Margin="0" Foreground="#fff"></TextBox>
+
+                            <TextBlock Foreground="Gray" Margin="0 20 0 0">Lastname</TextBlock>
+                            <TextBox x:Name="LastNameInput" BorderBrush="Gray" Margin="0" Foreground="#fff"></TextBox>
+                            
+                            <Button
+                                Click="SignUpAccount"
+                                Foreground="#fff"
+                                Background="#2F6EA5"
+                                Margin="0 30"
+                                FontSize="14"
+                                Height="40"
+                                BorderThickness="0"
+                                >SIGN UP</Button>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <!--#endregion-->
+
+
+
+                <TabItem Visibility="Collapsed">
+                    <Grid Grid.Row="1"  x:Name="Telegram_tg" Background="#0E1621">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40*"></ColumnDefinition>
+                            <ColumnDefinition Width="60*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <!--Telegram User lists and search section-->
+                        <Grid Grid.Column="0" Background="#17212B">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="10*"></RowDefinition>
+                                <RowDefinition Height="90*"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!--Search and button for open sidebar-->
+                            <Grid Grid.Row="0">
+                                <DockPanel>
+                                    <!--Button for open sidebar-->
+                                    <Button 
+                                    Click="Click_open_sidebar_btn"
+                                    BorderThickness="0"
+                                    BorderBrush="#17212B"
+                                    Width="40"
+                                    Height="30"
+                                    Margin="10 0"
+                                    Padding="0"
+                                    materialDesign:ShadowAssist.Darken="False"
+                                    materialDesign:ShadowAssist.ShadowDepth="Depth0"
+                                    Background="#17212B">
+                                        <materialDesign:PackIcon Kind="Menu"
+                                                             Foreground="#768C9E"
+                                                             Width="30"
+                                                             Height="25"/>
+                                    </Button>
+
+                                    <!--Search input-->
+                                    <TextBox  materialDesign:HintAssist.Hint="Search"
+                                          FontSize="18"
+                                          Foreground="#768C9E"
+                                        
+                                          Margin="5 8 20 8" 
+                                          VerticalContentAlignment="Center"
+                                          Background="#242F3D"
+                                          x:Name="searchFieald"
+                                          Style="{StaticResource textBoxSearchUser}"
+                                          KeyDown="searchFieald_KeyDown"
+                                          />
+                                    
+                                </DockPanel>
+                            </Grid>
+
+                            <!--Users list section-->
+                            <Grid Grid.Row="1" Name="UsersResalt" >
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <local1:UserList></local1:UserList>
+                                </ScrollViewer>
+                            </Grid>
+
+
+                            <Grid x:Name="SearchReslat" Visibility="Collapsed" Grid.Row="1" Background="#17212B">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <local1:SearchArea></local1:SearchArea>
+                                </ScrollViewer>
+                            </Grid>
+                            
+                        </Grid>
+
+
+
+
+
+                        <!--#region Chat Section-->
+                        <Grid Grid.Column="1" Background="#0E1621" x:Name="ChatArea">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="10*"></RowDefinition>
+                                    <RowDefinition Height="80*"></RowDefinition>
+                                    <RowDefinition Height="10*"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+
+
+
+                                <!--Chat section top side for client name and another functions-->
+                                <DockPanel Background="#17212B"  Cursor="Hand" Grid.Column="0">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource ChatUserStyleName}" x:Name="ChatUserName"  />
+                                        <TextBlock Style="{StaticResource ChatStyleTime}" x:Name="TimeOnline"  />
+                                    </StackPanel>
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <materialDesign:PackIcon Style="{StaticResource IconP}" Kind="Magnify" />
+                                        <materialDesign:PackIcon Style="{StaticResource IconP}" Kind="Phone" />
+                                        <materialDesign:PackIcon Style="{StaticResource IconP}" Kind="RectangleOutline" />
+                                        <materialDesign:PackIcon Style="{StaticResource IconP}" Kind="DotsVertical" />
+                                    </StackPanel>
+                                </DockPanel>
+
+
+
+                                <!--Chat area for chatting-->
+                                <StackPanel Grid.Row="1" Background="#0E1621" VerticalAlignment="Bottom">
+                                    <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto" Name="chat_scroll">
+                                        <StackPanel VerticalAlignment="Bottom"  Name="chat_area_stackPanel">
+                                            <local2:ChatPanel></local2:ChatPanel>
+                                        </StackPanel>
+                                    </ScrollViewer>
+
+                                </StackPanel>
+
+
+
+                                <!--Chat input for send message, file and audio-->
+                                <Grid Grid.Row="2" Background="#17212B" >
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="5*"></ColumnDefinition>
+                                            <ColumnDefinition Width="75*"></ColumnDefinition>
+                                            <ColumnDefinition Width="5*"></ColumnDefinition>
+                                            <ColumnDefinition Width="5*"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Padding="0" Style="{StaticResource chatBtn}" >
+                                            <materialDesign:PackIcon 
+                                            Style="{StaticResource IconP}"
+                                            Kind="Paperclip">
+                                            </materialDesign:PackIcon>
+                                        </Button>
+                                        <TextBox
+                                        Foreground="Gray"
+                                        materialDesign:HintAssist.Hint="Write a message..."
+                                        Grid.Column="1" 
+                                        FontSize="16"
+                                        Name="userMessage"
+                                        KeyDown="TextBox_KeyDown_for_send_message"
+                                        Margin="10">
+
+                                        </TextBox>
+                                        <Button Grid.Column="2" Padding="0" Style="{StaticResource  chatBtn}">
+                                            <materialDesign:PackIcon Style="{StaticResource IconP}" Kind="EmoticonHappyOutline" VerticalAlignment="Center" ></materialDesign:PackIcon>
+                                        </Button>
+                                        <Button Click="BtnSentMessage" Grid.Column="3" Padding="0" Style="{StaticResource chatBtn}">
+                                            <materialDesign:PackIcon Style="{StaticResource IconP}" Kind="Microphone" x:Name="IconAudioAndSentMessage"></materialDesign:PackIcon>
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+
+                            </Grid>
+                        </Grid>
+                        <!--#endregion-->
+
+                    </Grid>
+
+                </TabItem>
+            </TabControl>
+             <!--Telegram User lists and chat area section-->
             
             <!--Temp panel for close sidebar-->
             <Grid Grid.Row="1" 
@@ -267,9 +701,6 @@
     
     
     </Grid>
-    
-    
-    
     
     
 </Window>

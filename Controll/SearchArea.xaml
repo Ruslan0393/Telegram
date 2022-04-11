@@ -1,32 +1,16 @@
-﻿<UserControl x:Class="Telegram.Controll.UserList"
+﻿<UserControl x:Class="Telegram.Controll.SearchArea"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             Loaded="UserControl_Loaded"
+             Loaded="UserControl_Loaded123"
              xmlns:local="clr-namespace:Telegram.Controll"
              mc:Ignorable="d" >
-
-
-
-
+    
     <StackPanel>
+        <ItemsControl x:Name="Item_control_search" >
+            <local:SearchAreaItem></local:SearchAreaItem>
+        </ItemsControl>
+    </StackPanel>
     
-            <ItemsControl x:Name="Item_control" >
-                 <local:UserListUI></local:UserListUI>
-            </ItemsControl>
-    
-     </StackPanel>
- 
-
 </UserControl>
-
-
-
-
-
-
-
-
-
-

@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
+using Telegram.Model;
+using Telegram.Services;
 
 namespace Telegram.Controll
 {
@@ -20,20 +13,51 @@ namespace Telegram.Controll
     /// </summary>
     public partial class UserList : UserControl
     {
+
+        private UserServices _userService;
+        private FriendService _friendService;
+
+
+
         public UserList()
         {
             InitializeComponent();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            
+            _userService = new UserServices();
+            _friendService = new FriendService();
         }
 
 
-        private void Button_MouseDown(object sender, MouseButtonEventArgs e)
+
+        public async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            Item_control.Items.Clear();
+           
+
+
+            if (MainWindow.OwnerId > 0)
+            {
+                IEnumerable<Friend> friend = await _friendService.GetMyFriends(MainWindow.OwnerId);
+                Item_control.Items.Clear();
+                if (friend != null)
+                {
+                    foreach(var k in friend)
+                    {
+                        User user = await _userService.Get(k.FriendId);
+
+                        var pri = new UserListUI();
+
+                        pri.UserName.Text = user.FirstName + " " + user.LastName;
+                        pri.UserContent.Text = user.Password;
+                        pri.UserTime.Text = user.CreatedDate.ToString("HH:mm");
+                        pri.Id.Text = user.Id.ToString();
+                        Item_control.Items.Add(pri);
+
+                    }
+
+                }
+            }
+
+
         }
     }
 }

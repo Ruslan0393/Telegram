@@ -7,7 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\FirstPageTelegramImage.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\FirstPageTelegramImage.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.14">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\" />
   </ItemGroup>
 
 </Project>
